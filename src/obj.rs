@@ -84,7 +84,7 @@ impl ObjDb {
 		Ok(())
 	}
 
-	fn write_parser(&self) -> Result<BinaryParser> {
+	fn write_parser(&self) -> Result<BinaryParser<'_>> {
 		let mut writer = BinaryParser::new();
 
 		let max_id = self
@@ -97,11 +97,10 @@ impl ObjDb {
 		writer.write_u32(self.sets.len() as u32)?;
 		writer.write_u32(max_id as u32)?;
 
-		let sets = self.sets.clone();
 		writer.write_pointer(move |writer| {
-			for (id, set) in sets.into_iter() {
+			for (id, set) in self.sets.iter() {
 				writer.write_null_string_pointer(&set.name)?;
-				writer.write_u32(id)?;
+				writer.write_u32(*id)?;
 				writer.write_null_string_pointer(&set.object_filename)?;
 				writer.write_null_string_pointer(&set.texture_filename)?;
 				writer.write_null_string_pointer(&set.archive_filename)?;
@@ -119,13 +118,12 @@ impl ObjDb {
 				.sum(),
 		)?;
 
-		let sets = self.sets.clone();
 		writer.write_pointer(move |writer| {
 			writer.align_write(16)?;
-			for (set_id, set) in sets.into_iter() {
-				for (id, name) in set.objects {
-					writer.write_u16(id)?;
-					writer.write_u16(set_id as u16)?;
+			for (set_id, set) in self.sets.iter() {
+				for (id, name) in set.objects.iter() {
+					writer.write_u16(*id)?;
+					writer.write_u16(*set_id as u16)?;
 					writer.write_null_string_pointer(&name)?;
 				}
 			}
@@ -135,7 +133,7 @@ impl ObjDb {
 		})?;
 
 		writer.align_write(16)?;
-		writer.finish_writes()?;
+		let mut writer = writer.finish_writes()?;
 		writer.align_write(16)?;
 		Ok(writer)
 	}

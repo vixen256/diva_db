@@ -94,15 +94,14 @@ impl AetDb {
 		Ok(())
 	}
 
-	fn write_parser(&self) -> Result<BinaryParser> {
+	fn write_parser(&self) -> Result<BinaryParser<'_>> {
 		let mut writer = BinaryParser::new();
 
 		writer.write_u32(self.sets.len() as u32)?;
 
-		let sets = self.sets.clone();
 		writer.write_pointer(move |writer| {
-			for (i, (id, set)) in sets.into_iter().enumerate() {
-				writer.write_u32(id)?;
+			for (i, (id, set)) in self.sets.iter().enumerate() {
+				writer.write_u32(*id)?;
 				writer.write_null_string_pointer(&set.name)?;
 				writer.write_null_string_pointer(&set.filename)?;
 				writer.write_u32(i as u32)?;
@@ -120,11 +119,10 @@ impl AetDb {
 				.sum(),
 		)?;
 
-		let sets = self.sets.clone();
 		writer.write_pointer(move |writer| {
-			for (i, (_, set)) in sets.into_iter().enumerate() {
-				for (id, scene) in set.scenes {
-					writer.write_u32(id)?;
+			for (i, (_, set)) in self.sets.iter().enumerate() {
+				for (id, scene) in set.scenes.iter() {
+					writer.write_u32(*id)?;
 					writer.write_null_string_pointer(&scene.name)?;
 					writer.write_u16(scene.index)?;
 					writer.write_u16(i as u16)?;
@@ -136,7 +134,7 @@ impl AetDb {
 		})?;
 
 		writer.align_write(16)?;
-		writer.finish_writes()?;
+		let mut writer = writer.finish_writes()?;
 		writer.align_write(16)?;
 		Ok(writer)
 	}

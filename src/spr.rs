@@ -97,15 +97,14 @@ impl SprDb {
 		Ok(())
 	}
 
-	fn write_parser(&self) -> Result<BinaryParser> {
+	fn write_parser(&self) -> Result<BinaryParser<'_>> {
 		let mut writer = BinaryParser::new();
 
 		writer.write_u32(self.sets.len() as u32)?;
 
-		let sets = self.sets.clone();
 		writer.write_pointer(move |writer| {
-			for (i, (id, set)) in sets.into_iter().enumerate() {
-				writer.write_u32(id)?;
+			for (i, (id, set)) in self.sets.iter().enumerate() {
+				writer.write_u32(*id)?;
 				writer.write_null_string_pointer(&set.name)?;
 				writer.write_null_string_pointer(&set.filename)?;
 				writer.write_u32(i as u32)?;
@@ -122,18 +121,17 @@ impl SprDb {
 				.sum(),
 		)?;
 
-		let sets = self.sets.clone();
 		writer.write_pointer(move |writer| {
-			for (i, (_, set)) in sets.into_iter().enumerate() {
-				for (id, entry) in set.sprites {
-					writer.write_u32(id)?;
+			for (i, (_, set)) in self.sets.iter().enumerate() {
+				for (id, entry) in set.sprites.iter() {
+					writer.write_u32(*id)?;
 					writer.write_null_string_pointer(&entry.name)?;
 					writer.write_u16(entry.index)?;
 					writer.write_u16(i as u16)?;
 				}
 
-				for (id, entry) in set.textures {
-					writer.write_u32(id)?;
+				for (id, entry) in set.textures.iter() {
+					writer.write_u32(*id)?;
 					writer.write_null_string_pointer(&entry.name)?;
 					writer.write_u16(entry.index)?;
 					writer.write_u16(i as u16 | 0x1000)?;
@@ -145,7 +143,7 @@ impl SprDb {
 		})?;
 
 		writer.align_write(16)?;
-		writer.finish_writes()?;
+		let mut writer = writer.finish_writes()?;
 		writer.align_write(16)?;
 		Ok(writer)
 	}

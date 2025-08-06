@@ -43,14 +43,13 @@ impl TexDb {
 		Ok(())
 	}
 
-	fn write_parser(&self) -> Result<BinaryParser> {
+	fn write_parser(&self) -> Result<BinaryParser<'_>> {
 		let mut writer = BinaryParser::new();
 
 		writer.write_u32(self.textures.len() as u32)?;
-		let textures = self.textures.clone();
 		writer.write_pointer(move |writer| {
-			for (id, name) in textures.into_iter() {
-				writer.write_u32(id)?;
+			for (id, name) in self.textures.iter() {
+				writer.write_u32(*id)?;
 				writer.write_null_string_pointer(&name)?;
 			}
 			writer.align_write(16)?;
@@ -59,7 +58,7 @@ impl TexDb {
 		})?;
 
 		writer.align_write(16)?;
-		writer.finish_writes()?;
+		let mut writer = writer.finish_writes()?;
 		writer.align_write(16)?;
 		Ok(writer)
 	}
