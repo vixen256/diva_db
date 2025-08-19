@@ -145,6 +145,7 @@ impl SprDb {
 		writer.align_write(16)?;
 		let mut writer = writer.finish_writes()?;
 		writer.align_write(16)?;
+		let writer = writer.finish_writes()?;
 		Ok(writer)
 	}
 }
