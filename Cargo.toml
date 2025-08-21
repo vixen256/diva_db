@@ -5,7 +5,6 @@ edition = "2024"
 
 [dependencies]
 binary_parser = { git = "https://github.com/vixen256/binary_parser" }
-thiserror = "1.0"
 serde = { version = "1.0", optional = true, features = ["derive"] }
 
 [dev-dependencies]
