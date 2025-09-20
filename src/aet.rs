@@ -7,25 +7,38 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 
+#[cfg(feature = "pyo3")]
+use pyo3::prelude::*;
+
 #[derive(Debug, Default, Clone, PartialEq, PartialOrd, Ord, Eq, Hash)]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+#[cfg_attr(feature = "pyo3", cfg_eval::cfg_eval, pyclass)]
 pub struct AetDb {
+	#[cfg_attr(feature = "pyo3", pyo3(get, set))]
 	pub sets: BTreeMap<u32, AetSet>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, PartialOrd, Ord, Eq, Hash)]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+#[cfg_attr(feature = "pyo3", cfg_eval::cfg_eval, pyclass)]
 pub struct AetSet {
+	#[cfg_attr(feature = "pyo3", pyo3(get, set))]
 	pub name: String,
+	#[cfg_attr(feature = "pyo3", pyo3(get, set))]
 	pub filename: String,
+	#[cfg_attr(feature = "pyo3", pyo3(get, set))]
 	pub sprite_set_id: u32,
+	#[cfg_attr(feature = "pyo3", pyo3(get, set))]
 	pub scenes: BTreeMap<u32, AetScene>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, PartialOrd, Ord, Eq, Hash)]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+#[cfg_attr(feature = "pyo3", cfg_eval::cfg_eval, pyclass)]
 pub struct AetScene {
+	#[cfg_attr(feature = "pyo3", pyo3(get, set))]
 	pub name: String,
+	#[cfg_attr(feature = "pyo3", pyo3(get, set))]
 	pub index: u16,
 }
 

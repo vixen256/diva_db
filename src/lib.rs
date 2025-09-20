@@ -3,6 +3,9 @@ pub mod obj;
 pub mod spr;
 pub mod tex;
 
+#[cfg(feature = "pyo3")]
+mod py;
+
 pub use aet::AetDb;
 pub use obj::ObjDb;
 pub use spr::SprDb;

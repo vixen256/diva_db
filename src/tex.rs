@@ -7,9 +7,14 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 
+#[cfg(feature = "pyo3")]
+use pyo3::prelude::*;
+
 #[derive(Debug, Default, Clone, PartialEq, PartialOrd, Ord, Eq, Hash)]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+#[cfg_attr(feature = "pyo3", cfg_eval::cfg_eval, pyclass)]
 pub struct TexDb {
+	#[cfg_attr(feature = "pyo3", pyo3(get, set))]
 	pub textures: BTreeMap<u32, String>,
 }
 

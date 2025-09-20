@@ -8,19 +8,30 @@ use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
 
+#[cfg(feature = "pyo3")]
+use pyo3::prelude::*;
+
 #[derive(Debug, Default, Clone, PartialEq, PartialOrd, Ord, Eq, Hash)]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+#[cfg_attr(feature = "pyo3", cfg_eval::cfg_eval, pyclass)]
 pub struct ObjDb {
+	#[cfg_attr(feature = "pyo3", pyo3(get, set))]
 	pub sets: BTreeMap<u32, ObjSet>,
 }
 
 #[derive(Debug, Default, Clone, PartialEq, PartialOrd, Ord, Eq, Hash)]
 #[cfg_attr(feature = "serde", derive(Deserialize, Serialize))]
+#[cfg_attr(feature = "pyo3", cfg_eval::cfg_eval, pyclass)]
 pub struct ObjSet {
+	#[cfg_attr(feature = "pyo3", pyo3(get, set))]
 	pub name: String,
+	#[cfg_attr(feature = "pyo3", pyo3(get, set))]
 	pub object_filename: String,
+	#[cfg_attr(feature = "pyo3", pyo3(get, set))]
 	pub texture_filename: String,
+	#[cfg_attr(feature = "pyo3", pyo3(get, set))]
 	pub archive_filename: String,
+	#[cfg_attr(feature = "pyo3", pyo3(get, set))]
 	pub objects: BTreeMap<u16, String>,
 }
 
